@@ -1,4 +1,4 @@
-package com.researchworx.cresco.plugins.base.messaging;
+package com.researchworx.cresco.plugins.messaging;
 
 import java.util.HashMap;
 import java.util.Iterator;

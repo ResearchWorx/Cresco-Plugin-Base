@@ -1,11 +1,10 @@
-package com.researchworx.cresco.plugins.base.core;
+package com.researchworx.cresco.plugins.core;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
 public class Config {
-
     private HierarchicalINIConfiguration iniConfObj;
 
     public Config(String configFile) throws ConfigurationException {

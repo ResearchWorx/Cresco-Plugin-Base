@@ -1,4 +1,4 @@
-package com.researchworx.cresco.plugins.base.utilities;
+package com.researchworx.cresco.plugins.utilities;
 
 import java.util.Random;
 

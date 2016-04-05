@@ -1,7 +1,7 @@
-package com.researchworx.cresco.plugins.base.utilities;
+package com.researchworx.cresco.plugins.utilities;
 
-import com.researchworx.cresco.plugins.base.messaging.MsgEvent;
-import com.researchworx.cresco.plugins.base.messaging.MsgEventType;
+import com.researchworx.cresco.plugins.messaging.MsgEvent;
+import com.researchworx.cresco.plugins.messaging.MsgEventType;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
