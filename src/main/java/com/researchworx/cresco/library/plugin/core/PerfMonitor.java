@@ -1,13 +1,13 @@
-package com.researchworx.cresco.plugins.core;
+package com.researchworx.cresco.library.plugin.core;
 
-import com.researchworx.cresco.plugins.messaging.MsgEvent;
-import com.researchworx.cresco.plugins.messaging.MsgEventType;
-import com.researchworx.cresco.plugins.utilities.Clogger;
+import com.researchworx.cresco.library.core.Config;
+import com.researchworx.cresco.library.messaging.MsgEvent;
+import com.researchworx.cresco.library.utilities.CLogger;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class WatchPerf {
+public class PerfMonitor {
     private Timer timer;
     private boolean running = false;
     private long interval;
@@ -16,10 +16,10 @@ public class WatchPerf {
     private String region;
     private String agent;
     private String plugin;
-    private Clogger clog;
+    private CLogger clog;
     private Config config;
 
-    public WatchPerf(String region, String agent, String plugin, Clogger clog, Config config) {
+    public PerfMonitor(String region, String agent, String plugin, CLogger clog, Config config) {
         this.region = region;
         this.agent = agent;
         this.plugin = plugin;
@@ -27,9 +27,9 @@ public class WatchPerf {
         this.config = config;
 
         this.interval = Long.parseLong(config.getStringParam("", "watchdogtimer"));
-        startTS = System.currentTimeMillis();
+        this.startTS = System.currentTimeMillis();
 
-        MsgEvent initial = new MsgEvent(MsgEventType.INFO, this.region, null, null, "WatchDog timer set to " + this.interval + " milliseconds");
+        MsgEvent initial = new MsgEvent(MsgEvent.Type.INFO, this.region, this.agent, this.plugin, "WatchDog timer set to " + this.interval + " milliseconds");
         initial.setParam("src_region", this.region);
         initial.setParam("src_agent", this.agent);
         initial.setParam("src_plugin", this.plugin);
@@ -39,15 +39,15 @@ public class WatchPerf {
         start();
     }
 
-    private class WatchDogTask extends TimerTask {
+    private class PerfMonitorTask extends TimerTask {
         private String region;
         private String agent;
         private String plugin;
         private Long interval;
-        private Clogger clog;
+        private CLogger clog;
         private Config config;
 
-        WatchDogTask(String region, String agent, String plugin, Long interval, Clogger clog, Config config) {
+        PerfMonitorTask(String region, String agent, String plugin, Long interval, CLogger clog, Config config) {
             this.region = region;
             this.agent = agent;
             this.plugin = plugin;
@@ -58,15 +58,15 @@ public class WatchPerf {
 
         public void run() {
             long runTime = System.currentTimeMillis() - startTS;
-            MsgEvent le = new MsgEvent(MsgEventType.WATCHDOG, this.region, null, null, "WatchDog timer set to " + this.interval + " milliseconds");
+            MsgEvent le = new MsgEvent(MsgEvent.Type.WATCHDOG, this.region, null, null, "WatchDog timer set to " + this.interval + " milliseconds");
             le.setParam("src_region", this.region);
             le.setParam("src_agent", this.agent);
             le.setParam("src_plugin", this.plugin);
             le.setParam("dst_region", this.region);
             le.setParam("isGlobal", "true");
-            le.setParam("resource_id", this.config.getStringParam("",""));
-            le.setParam("inode_id", this.config.getStringParam("",""));
-            le.setParam("perfmetric", this.config.getStringParam("",""));
+            le.setParam("resource_id", this.config.getStringParam("", ""));
+            le.setParam("inode_id", this.config.getStringParam("", ""));
+            le.setParam("perfmetric", this.config.getStringParam("", ""));
             le.setParam("runtime", String.valueOf(runTime));
             le.setParam("timestamp", String.valueOf(System.currentTimeMillis()));
             this.clog.log(le);
@@ -77,7 +77,7 @@ public class WatchPerf {
         if (this.running) return false;
         this.interval = Long.parseLong(this.config.getStringParam("", "watchdogtimer"));
         this.timer = new Timer();
-        this.timer.scheduleAtFixedRate(new WatchDogTask(this.region, this.agent, this.plugin, this.interval, this.clog, this.config), 500, this.interval);
+        this.timer.scheduleAtFixedRate(new PerfMonitorTask(this.region, this.agent, this.plugin, this.interval, this.clog, this.config), 500, this.interval);
         return true;
     }
 
