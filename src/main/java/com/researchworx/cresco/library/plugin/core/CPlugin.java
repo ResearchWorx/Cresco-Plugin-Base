@@ -19,15 +19,15 @@ public abstract class CPlugin {
     private String name;
     private String version;
 
-    protected boolean isActive;
-    protected Config config;
+    private boolean isActive;
+    private Config config;
 
-    protected CExecutor exec;
-    protected CLogger logger;
-    protected ConcurrentLinkedQueue<MsgEvent> msgQueue;
-    protected RPC rpc;
-    protected ConcurrentMap<String, MsgEvent> rpcMap;
-    protected WatchDog watchDog;
+    private CExecutor exec;
+    private CLogger logger;
+    private ConcurrentLinkedQueue<MsgEvent> msgQueue;
+    private RPC rpc;
+    private ConcurrentMap<String, MsgEvent> rpcMap;
+    private WatchDog watchDog;
 
     public CPlugin() {
         this("unknown", "unknown");
@@ -89,6 +89,14 @@ public abstract class CPlugin {
         new Thread(new MessageProcessor(msg, this.msgQueue, this.exec, this.logger)).start();
     }
 
+    public void sendMessage(MsgEvent msg) {
+        this.msgQueue.offer(msg);
+    }
+
+    public void sendRPC(MsgEvent msg) {
+        this.rpc.send(msg);
+    }
+
     public void setRegion(String region) {
         this.region = region;
     }
@@ -103,6 +111,10 @@ public abstract class CPlugin {
 
     public void setExec(CExecutor exec) {
         this.exec = exec;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getRegion() {
@@ -127,6 +139,14 @@ public abstract class CPlugin {
 
     public RPC getRPC() {
         return rpc;
+    }
+
+    public ConcurrentMap<String, MsgEvent> getRPCMap() {
+        return rpcMap;
+    }
+
+    public CExecutor getExec() {
+        return exec;
     }
 
     public ConcurrentLinkedQueue<MsgEvent> getMsgQueue() {
@@ -157,13 +177,13 @@ public abstract class CPlugin {
         @Override
         public void run() {
             try {
-                MsgEvent retMsg = this.exec.process(msg);
+                MsgEvent retMsg = this.exec.execute(msg);
                 if (retMsg != null) {
                     retMsg.setReturn();
                     this.msgQueue.offer(retMsg);
                 }
             } catch (Exception e) {
-                this.logger.error("Message Processing Exception: {}", e.getMessage());
+                this.logger.error("Message Execution Exception: {}", e.getMessage());
             }
         }
     }
