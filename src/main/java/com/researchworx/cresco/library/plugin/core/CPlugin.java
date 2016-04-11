@@ -5,7 +5,7 @@ import com.researchworx.cresco.library.core.WatchDog;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import com.researchworx.cresco.library.messaging.RPC;
 import com.researchworx.cresco.library.utilities.CLogger;
-import org.apache.commons.configuration2.SubnodeConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
