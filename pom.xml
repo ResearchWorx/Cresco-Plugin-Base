@@ -6,7 +6,7 @@
 
 	<groupId>com.researchworx.cresco</groupId>
 	<artifactId>cresco-plugin-library</artifactId>
-	<version>0.2.9</version>
+	<version>0.3.0</version>
 	<packaging>jar</packaging>
 
 	<name>Cresco Plugin Library</name>
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>com.researchworx.cresco</groupId>
 			<artifactId>cresco-library</artifactId>
-			<version>0.1.8</version>
+			<version>0.2.0</version>
 		</dependency>
 	</dependencies>
 

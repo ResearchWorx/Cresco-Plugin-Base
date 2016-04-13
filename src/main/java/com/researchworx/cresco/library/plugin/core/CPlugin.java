@@ -24,7 +24,7 @@ public abstract class CPlugin {
 
     private CExecutor exec;
     private CLogger logger;
-    private ConcurrentLinkedQueue<MsgEvent> msgQueue;
+    private ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
     private RPC rpc;
     private ConcurrentMap<String, MsgEvent> rpcMap;
     private WatchDog watchDog;
@@ -41,8 +41,8 @@ public abstract class CPlugin {
         this.plugin = "init";
         importExecutor();
         this.rpcMap = new ConcurrentHashMap<>();
-        this.msgQueue = new ConcurrentLinkedQueue<>();
-        this.logger = new CLogger(this.msgQueue, this.region, this.agent, this.plugin);
+        this.msgOutQueue = new ConcurrentLinkedQueue<>();
+        this.logger = new CLogger(this.msgOutQueue, this.region, this.agent, this.plugin);
     }
 
     public abstract void importExecutor();
@@ -60,17 +60,17 @@ public abstract class CPlugin {
 
     public void cleanUp() { }
 
-    public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgQueue, SubnodeConfiguration config, String region, String agent, String plugin) {
+    public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgOutQueue, SubnodeConfiguration config, String region, String agent, String plugin) {
         this.isActive = true;
 
-        this.msgQueue = msgQueue;
+        this.msgOutQueue = msgOutQueue;
         this.config = new Config(config);
         this.region = region;
         this.agent = agent;
         this.plugin = plugin;
 
-        this.logger = new CLogger(this.msgQueue, this.region, this.agent, this.plugin);
-        this.rpc = new RPC(this.msgQueue, this.rpcMap, this.region, this.agent, this.plugin, this.logger);
+        this.logger = new CLogger(this.msgOutQueue, this.region, this.agent, this.plugin);
+        this.rpc = new RPC(this.msgOutQueue, this.rpcMap, this.region, this.agent, this.plugin, this.logger);
         this.watchDog = new WatchDog(this.region, this.agent, this.plugin, this.logger, this.config);
 
         try {
@@ -86,15 +86,15 @@ public abstract class CPlugin {
 
     public void msgIn(MsgEvent msg) {
         if (msg == null) return;
-        new Thread(new MessageProcessor(msg, this.msgQueue, this.exec, this.logger)).start();
+        new Thread(new MessageProcessor(msg, this.msgOutQueue, this.exec, this.logger)).start();
     }
 
-    public void sendMessage(MsgEvent msg) {
-        this.msgQueue.offer(msg);
+    public void sendMsgEvent(MsgEvent msg) {
+        this.msgOutQueue.offer(msg);
     }
 
     public void sendRPC(MsgEvent msg) {
-        this.rpc.send(msg);
+        this.rpc.call(msg);
     }
 
     public void setRegion(String region) {
@@ -150,7 +150,7 @@ public abstract class CPlugin {
     }
 
     public ConcurrentLinkedQueue<MsgEvent> getMsgQueue() {
-        return msgQueue;
+        return msgOutQueue;
     }
 
     public CLogger getLogger() {
@@ -163,13 +163,13 @@ public abstract class CPlugin {
 
     private static class MessageProcessor implements Runnable {
         private MsgEvent msg;
-        private ConcurrentLinkedQueue<MsgEvent> msgQueue;
+        private ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
         private CExecutor exec;
         private CLogger logger;
 
-        MessageProcessor(MsgEvent msg, ConcurrentLinkedQueue<MsgEvent> msgQueue, CExecutor exec, CLogger logger) {
+        MessageProcessor(MsgEvent msg, ConcurrentLinkedQueue<MsgEvent> msgOutQueue, CExecutor exec, CLogger logger) {
             this.msg = msg;
-            this.msgQueue = msgQueue;
+            this.msgOutQueue = msgOutQueue;
             this.exec = exec;
             this.logger = logger;
         }
@@ -180,7 +180,7 @@ public abstract class CPlugin {
                 MsgEvent retMsg = this.exec.execute(msg);
                 if (retMsg != null) {
                     retMsg.setReturn();
-                    this.msgQueue.offer(retMsg);
+                    this.msgOutQueue.offer(retMsg);
                 }
             } catch (Exception e) {
                 this.logger.error("Message Execution Exception: {}", e.getMessage());
