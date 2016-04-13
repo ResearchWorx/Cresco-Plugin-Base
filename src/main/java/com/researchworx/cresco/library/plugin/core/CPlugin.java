@@ -97,6 +97,14 @@ public abstract class CPlugin {
         this.rpc.call(msg);
     }
 
+    public void setRPCMap(String key, MsgEvent value) {
+        this.rpcMap.put(key, value);
+    }
+
+    public void execute(MsgEvent msg) {
+        this.exec.execute(msg);
+    }
+
     protected void setRegion(String region) {
         this.region = region;
     }
@@ -113,8 +121,8 @@ public abstract class CPlugin {
         this.exec = exec;
     }
 
-    protected void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
+    protected void setActive(Boolean state) {
+        this.isActive = state;
     }
 
     public String getRegion() {
@@ -137,22 +145,6 @@ public abstract class CPlugin {
         return version;
     }
 
-    public RPC getRPC() {
-        return rpc;
-    }
-
-    public ConcurrentMap<String, MsgEvent> getRPCMap() {
-        return rpcMap;
-    }
-
-    public CExecutor getExec() {
-        return exec;
-    }
-
-    public ConcurrentLinkedQueue<MsgEvent> getMsgQueue() {
-        return msgOutQueue;
-    }
-
     public CLogger getLogger() {
         return logger;
     }
@@ -160,6 +152,8 @@ public abstract class CPlugin {
     public Config getConfig() {
         return config;
     }
+
+    public Boolean isActive() { return isActive; }
 
     private static class MessageProcessor implements Runnable {
         private MsgEvent msg;
