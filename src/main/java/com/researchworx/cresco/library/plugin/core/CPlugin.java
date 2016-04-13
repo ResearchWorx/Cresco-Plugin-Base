@@ -12,28 +12,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 public abstract class CPlugin {
-    private String region;
-    private String agent;
-    private String plugin;
+    protected String region;
+    protected String agent;
+    protected String plugin;
 
-    private String name;
-    private String version;
+    protected String name;
+    protected String version;
 
-    private boolean isActive;
-    private Config config;
+    protected boolean isActive;
+    protected Config config;
 
-    private CExecutor exec;
-    private CLogger logger;
-    private ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
-    private RPC rpc;
-    private ConcurrentMap<String, MsgEvent> rpcMap;
-    private WatchDog watchDog;
+    protected CExecutor exec;
+    protected CLogger logger;
+    protected ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
+    protected RPC rpc;
+    protected ConcurrentMap<String, MsgEvent> rpcMap;
+    protected WatchDog watchDog;
 
-    public CPlugin() {
+    protected CPlugin() {
         this("unknown", "unknown");
     }
 
-    public CPlugin(String name, String version) {
+    protected CPlugin(String name, String version) {
         this.name = name;
         this.version = version;
         this.region = "init";
@@ -45,7 +45,7 @@ public abstract class CPlugin {
         this.logger = new CLogger(this.msgOutQueue, this.region, this.agent, this.plugin);
     }
 
-    public abstract void importExecutor();
+    protected abstract void importExecutor();
 
     public void shutdown() {
         this.isActive = false;
@@ -58,7 +58,7 @@ public abstract class CPlugin {
         }
     }
 
-    public void cleanUp() { }
+    protected void cleanUp() { }
 
     public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgOutQueue, SubnodeConfiguration config, String region, String agent, String plugin) {
         this.isActive = true;
@@ -82,7 +82,7 @@ public abstract class CPlugin {
         return true;
     }
 
-    public abstract void execute();
+    protected abstract void execute();
 
     public void msgIn(MsgEvent msg) {
         if (msg == null) return;
@@ -97,23 +97,23 @@ public abstract class CPlugin {
         this.rpc.call(msg);
     }
 
-    public void setRegion(String region) {
+    protected void setRegion(String region) {
         this.region = region;
     }
 
-    public void setAgent(String agent) {
+    protected void setAgent(String agent) {
         this.agent = agent;
     }
 
-    public void setPlugin(String plugin) {
+    protected void setPlugin(String plugin) {
         this.plugin = plugin;
     }
 
-    public void setExec(CExecutor exec) {
+    protected void setExec(CExecutor exec) {
         this.exec = exec;
     }
 
-    public void setIsActive(Boolean isActive) {
+    protected void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
 
