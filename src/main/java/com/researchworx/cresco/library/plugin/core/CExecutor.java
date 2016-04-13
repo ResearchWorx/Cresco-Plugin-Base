@@ -12,7 +12,7 @@ public abstract class CExecutor {
     public MsgEvent execute(MsgEvent incoming) {
         String callID = getCallID(incoming);
         if (callID != null) {
-            this.plugin.getRPCMap().put(callID, incoming);
+            this.plugin.setRPCMap(callID, incoming);
             return null;
         } else if (incoming.getParam("dst_region").equals(this.plugin.getRegion()) &&
                 incoming.getParam("dst_agent").equals(this.plugin.getAgent()) &&
