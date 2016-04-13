@@ -18,17 +18,17 @@ public abstract class CExecutor {
                 incoming.getParam("dst_agent").equals(this.plugin.getAgent()) &&
                 incoming.getParam("dst_plugin").equals(this.plugin.getPlugin())) {
             if (incoming.getMsgType().equals(MsgEvent.Type.CONFIG)) {
-                processConfigWrapper(incoming);
+                incoming = processConfigWrapper(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.DISCOVER)) {
-                processDiscoverWrapper(incoming);
+                incoming = processDiscoverWrapper(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.ERROR)) {
-                processConfigWrapper(incoming);
+                incoming = processConfigWrapper(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.EXEC)) {
-                processExecWrapper(incoming);
+                incoming = processExecWrapper(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.INFO)) {
-                processInfoWrapper(incoming);
+                incoming = processInfoWrapper(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.WATCHDOG)) {
-                processWatchDogWrapper(incoming);
+                incoming = processWatchDogWrapper(incoming);
             } else {
                 incoming.setMsgBody("Unknown or Unset MsgEvent.Type: " + incoming.getParams());
             }
@@ -45,48 +45,48 @@ public abstract class CExecutor {
         processConfig(incoming);
         return incoming;
     }
-    public void processConfig(MsgEvent incoming) {
-
+    public MsgEvent processConfig(MsgEvent incoming) {
+        return incoming;
     }
     public MsgEvent processDiscoverWrapper(MsgEvent incoming) {
         setUnsupported(incoming);
         processDiscover(incoming);
         return incoming;
     }
-    public void processDiscover(MsgEvent incoming) {
-
+    public MsgEvent processDiscover(MsgEvent incoming) {
+        return incoming;
     }
     public MsgEvent processErrorWrapper(MsgEvent incoming) {
         setUnsupported(incoming);
         processError(incoming);
         return incoming;
     }
-    public void processError(MsgEvent incoming) {
-
+    public MsgEvent processError(MsgEvent incoming) {
+        return incoming;
     }
     public MsgEvent processExecWrapper(MsgEvent incoming) {
         setUnsupported(incoming);
         processExec(incoming);
         return incoming;
     }
-    public void processExec(MsgEvent incoming) {
-
+    public MsgEvent processExec(MsgEvent incoming) {
+        return incoming;
     }
     public MsgEvent processInfoWrapper(MsgEvent incoming) {
         setUnsupported(incoming);
         processInfo(incoming);
         return incoming;
     }
-    public void processInfo(MsgEvent incoming) {
-
+    public MsgEvent processInfo(MsgEvent incoming) {
+        return incoming;
     }
     public MsgEvent processWatchDogWrapper(MsgEvent incoming) {
         setUnsupported(incoming);
         processWatchDog(incoming);
         return incoming;
     }
-    public void processWatchDog(MsgEvent incoming) {
-
+    public MsgEvent processWatchDog(MsgEvent incoming) {
+        return incoming;
     }
 
     private MsgEvent setUnsupported(MsgEvent incoming) {
