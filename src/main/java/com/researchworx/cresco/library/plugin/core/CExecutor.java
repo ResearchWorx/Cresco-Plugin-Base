@@ -3,99 +3,102 @@ package com.researchworx.cresco.library.plugin.core;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 
 public abstract class CExecutor {
+    /** Plugin instance */
     protected CPlugin plugin;
 
+    /**
+     * Constructor
+     * @param plugin        Plugin instance for this Cresco executor
+     */
     public CExecutor(CPlugin plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Process incoming message
+     * @param incoming      Incoming message
+     * @return              Processed message
+     */
     public MsgEvent execute(MsgEvent incoming) {
-        String callID = getCallID(incoming);
+        String callID = incoming.getParam("callID-" + this.plugin.getRegion() + "-" +
+                this.plugin.getAgent() + "-" + this.plugin.getPluginID());
         if (callID != null) {
-            this.plugin.setRPCMap(callID, incoming);
+            this.plugin.putRPCMap(callID, incoming);
             return null;
-        } else if (incoming.getParam("dst_region").equals(this.plugin.getRegion()) &&
+        }
+        if (incoming.getParam("dst_region").equals(this.plugin.getRegion()) &&
                 incoming.getParam("dst_agent").equals(this.plugin.getAgent()) &&
-                incoming.getParam("dst_plugin").equals(this.plugin.getPlugin())) {
+                incoming.getParam("dst_plugin").equals(this.plugin.getPluginID())) {
             if (incoming.getMsgType().equals(MsgEvent.Type.CONFIG)) {
-                incoming = processConfigWrapper(incoming);
+                incoming = processConfig(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.DISCOVER)) {
-                incoming = processDiscoverWrapper(incoming);
+                incoming = processDiscover(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.ERROR)) {
-                incoming = processConfigWrapper(incoming);
+                incoming = processConfig(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.EXEC)) {
-                incoming = processExecWrapper(incoming);
+                incoming = processExec(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.INFO)) {
-                incoming = processInfoWrapper(incoming);
+                incoming = processInfo(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.WATCHDOG)) {
-                incoming = processWatchDogWrapper(incoming);
+                incoming = processWatchDog(incoming);
             } else {
-                incoming.setMsgBody("Unknown or Unset MsgEvent.Type: " + incoming.getParams());
+                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" + this.plugin.getName() + ":" + this.plugin.getVersion() + "]");
             }
         } else {
             incoming.setMsgPlugin(incoming.getParam("dst_plugin"));
             incoming.setMsgAgent(incoming.getParam("dst_agent"));
+            incoming.setMsgRegion(incoming.getParam("dst_region"));
             return null;
         }
         return incoming;
     }
 
-    public MsgEvent processConfigWrapper(MsgEvent incoming) {
-        setUnsupported(incoming);
-        processConfig(incoming);
-        return incoming;
-    }
+    /**
+     * Override to process Config messages
+     * @param incoming      Message to process
+     * @return              Processed message
+     */
     public MsgEvent processConfig(MsgEvent incoming) {
         return incoming;
     }
-    public MsgEvent processDiscoverWrapper(MsgEvent incoming) {
-        setUnsupported(incoming);
-        processDiscover(incoming);
-        return incoming;
-    }
+    /**
+     * Override to process Discovier messages
+     * @param incoming      Message to process
+     * @return              Processed message
+     */
     public MsgEvent processDiscover(MsgEvent incoming) {
         return incoming;
     }
-    public MsgEvent processErrorWrapper(MsgEvent incoming) {
-        setUnsupported(incoming);
-        processError(incoming);
-        return incoming;
-    }
+    /**
+     * Override to process Error messages
+     * @param incoming      Message to process
+     * @return              Processed message
+     */
     public MsgEvent processError(MsgEvent incoming) {
         return incoming;
     }
-    public MsgEvent processExecWrapper(MsgEvent incoming) {
-        setUnsupported(incoming);
-        processExec(incoming);
-        return incoming;
-    }
+    /**
+     * Override to process Exec messages
+     * @param incoming      Message to process
+     * @return              Processed message
+     */
     public MsgEvent processExec(MsgEvent incoming) {
         return incoming;
     }
-    public MsgEvent processInfoWrapper(MsgEvent incoming) {
-        setUnsupported(incoming);
-        processInfo(incoming);
-        return incoming;
-    }
+    /**
+     * Override to process Info messages
+     * @param incoming      Message to process
+     * @return              Processed message
+     */
     public MsgEvent processInfo(MsgEvent incoming) {
         return incoming;
     }
-    public MsgEvent processWatchDogWrapper(MsgEvent incoming) {
-        setUnsupported(incoming);
-        processWatchDog(incoming);
-        return incoming;
-    }
+    /**
+     * Override to process WatchDog messages
+     * @param incoming      Message to process
+     * @return              Processed message
+     */
     public MsgEvent processWatchDog(MsgEvent incoming) {
         return incoming;
-    }
-
-    private MsgEvent setUnsupported(MsgEvent incoming) {
-        incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" + this.plugin.getName() + ":" + this.plugin.getVersion() + "]");
-        return incoming;
-    }
-
-    protected String getCallID(MsgEvent msg) {
-        return msg.getParam("callID-" + this.plugin.getRegion() + "-" +
-                this.plugin.getAgent() + "-" + this.plugin.getPlugin());
     }
 }
