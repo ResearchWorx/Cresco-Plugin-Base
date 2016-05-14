@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
  * Cresco plugin base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
- * @version 0.3.17
+ * @version 0.4.1
  */
 public abstract class CPlugin {
     /** Region of the plugin instance */
@@ -97,6 +97,7 @@ public abstract class CPlugin {
             this.logger.error("Plugin Initialization Exception: {}", e.getMessage());
             return false;
         }
+        startWatchDog();
         return true;
     }
 

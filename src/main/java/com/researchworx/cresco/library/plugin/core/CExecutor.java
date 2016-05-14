@@ -2,6 +2,12 @@ package com.researchworx.cresco.library.plugin.core;
 
 import com.researchworx.cresco.library.messaging.MsgEvent;
 
+/**
+ * Cresco executor base
+ * @author V.K. Cody Bumgardner
+ * @author Caylin Hickey
+ * @version 0.4.1
+ */
 public abstract class CExecutor {
     /** Plugin instance */
     protected CPlugin plugin;
