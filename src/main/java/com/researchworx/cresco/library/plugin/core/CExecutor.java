@@ -6,7 +6,7 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
  * Cresco executor base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
- * @version 0.4.2
+ * @version 0.4.3
  */
 public abstract class CExecutor {
     /** Plugin instance */

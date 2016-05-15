@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
  * Cresco plugin base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
- * @version 0.4.2
+ * @version 0.4.3
  */
 public abstract class CPlugin {
     /** Region of the plugin instance */
@@ -115,14 +115,16 @@ public abstract class CPlugin {
     }
 
     /**
-     * Method to override for any last minute cleanup
+     * Override this method for any last minute cleanup
      */
     protected void cleanUp() { }
 
     /**
-     * Sets the CExecutor implementation to be used by the plugin
+     * Override this method to use your own CExecutor class for MsgEvent processing
      */
-    protected abstract void setExecutor();
+    protected void setExecutor() {
+        this.exec = new SimpleExecutor(this);
+    }
 
     /**
      * Main entry point for plugin implementation class
