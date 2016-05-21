@@ -191,7 +191,9 @@ public abstract class CPlugin {
      * Stops the WatchDog timer
      */
     public void stopWatchDog() {
-        this.watchDog.stop();
+        if(this.watchDog != null) { //possibly null on failure
+            this.watchDog.stop();
+        }
     }
 
     public String getName() {
