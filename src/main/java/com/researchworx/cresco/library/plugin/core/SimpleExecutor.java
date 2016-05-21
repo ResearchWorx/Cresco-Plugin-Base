@@ -4,7 +4,7 @@ package com.researchworx.cresco.library.plugin.core;
  * Cresco simple executor implementation
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
- * @version 0.4.3
+ * @version 0.4.6
  */
 public class SimpleExecutor extends CExecutor {
     /**

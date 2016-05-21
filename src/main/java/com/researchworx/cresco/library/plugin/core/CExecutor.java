@@ -6,7 +6,7 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
  * Cresco executor base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
- * @version 0.4.3
+ * @version 0.4.6
  */
 public abstract class CExecutor {
     /** Plugin instance */
@@ -26,15 +26,15 @@ public abstract class CExecutor {
      * @return              Processed message
      */
     public MsgEvent execute(MsgEvent incoming) {
-        String callID = incoming.getParam("callID-" + this.plugin.getRegion() + "-" +
-                this.plugin.getAgent() + "-" + this.plugin.getPluginID());
+        String callID = incoming.getParam("callID-" + plugin.getRegion() + "-" +
+                plugin.getAgent() + "-" + plugin.getPluginID());
         if (callID != null) {
-            this.plugin.putRPCMap(callID, incoming);
+            plugin.putRPCMap(callID, incoming);
             return null;
         }
-        if (incoming.getParam("dst_region").equals(this.plugin.getRegion()) &&
-                incoming.getParam("dst_agent").equals(this.plugin.getAgent()) &&
-                incoming.getParam("dst_plugin").equals(this.plugin.getPluginID())) {
+        if (incoming.getParam("dst_region").equals(plugin.getRegion()) &&
+                incoming.getParam("dst_agent").equals(plugin.getAgent()) &&
+                incoming.getParam("dst_plugin").equals(plugin.getPluginID())) {
             if (incoming.getMsgType().equals(MsgEvent.Type.CONFIG)) {
                 incoming = processConfig(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.DISCOVER)) {
@@ -48,7 +48,7 @@ public abstract class CExecutor {
             } else if (incoming.getMsgType().equals(MsgEvent.Type.WATCHDOG)) {
                 incoming = processWatchDog(incoming);
             } else {
-                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" + this.plugin.getName() + ":" + this.plugin.getVersion() + "]");
+                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" + plugin.getName() + ":" + plugin.getVersion() + "]");
             }
         } else {
             incoming.setMsgPlugin(incoming.getParam("dst_plugin"));

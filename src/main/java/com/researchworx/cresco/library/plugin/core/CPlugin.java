@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
  * Cresco plugin base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
- * @version 0.4.3
+ * @version 0.4.6
  */
 public abstract class CPlugin {
     /** Region of the plugin instance */
@@ -69,7 +69,7 @@ public abstract class CPlugin {
         setExecutor();
         setRPCMap(new ConcurrentHashMap<String, MsgEvent>());
         setMsgOutQueue(new ConcurrentLinkedQueue<MsgEvent>());
-        setLogger(new CLogger(this.msgOutQueue, this.region, this.agent, this.pluginID));
+        setLogger(new CLogger(msgOutQueue, region, agent, pluginID));
     }
 
     /**
@@ -89,12 +89,12 @@ public abstract class CPlugin {
         setAgent(agent);
         setPluginID(pluginID);
         setLogger(new CLogger(this.msgOutQueue, this.region, this.agent, this.pluginID));
-        setRPC(new RPC(this.msgOutQueue, this.rpcMap, this.region, this.agent, this.pluginID, this.logger));
-        setWatchDog(new WatchDog(this.region, this.agent, this.pluginID, this.logger, this.config));
+        setRPC(new RPC(this.msgOutQueue, this.rpcMap, this.region, this.agent, this.pluginID, logger));
+        setWatchDog(new WatchDog(this.region, this.agent, this.pluginID, logger, this.config));
         try {
             start();
         } catch (Exception e) {
-            this.logger.error("Plugin Initialization Exception: {}", e.getMessage());
+            logger.error("Plugin Initialization Exception: {}", e.getMessage());
             return false;
         }
         startWatchDog();
@@ -136,7 +136,7 @@ public abstract class CPlugin {
      * @param message       Message for the executor
      */
     public MsgEvent execute(MsgEvent message) {
-        return this.exec.execute(message);
+        return exec.execute(message);
     }
 
     /**
@@ -145,7 +145,7 @@ public abstract class CPlugin {
      */
     public void msgIn(MsgEvent message) {
         if (message == null) return;
-        new Thread(new MessageProcessor(message, this.msgOutQueue, this.exec, this.logger)).start();
+        new Thread(new MessageProcessor(message, msgOutQueue, exec, logger)).start();
     }
 
     /**
@@ -154,7 +154,7 @@ public abstract class CPlugin {
      * @param message       RPC message to track
      */
     public void putRPCMap(String callID, MsgEvent message) {
-        this.rpcMap.put(callID, message);
+        rpcMap.put(callID, message);
     }
 
     /**
@@ -162,7 +162,7 @@ public abstract class CPlugin {
      * @param msg           MsgEvent object to send
      */
     public void sendMsgEvent(MsgEvent msg) {
-        this.msgOutQueue.offer(msg);
+        msgOutQueue.offer(msg);
     }
 
     /**
@@ -170,30 +170,47 @@ public abstract class CPlugin {
      * @param msg           MsgEvent object to issue
      */
     public void sendRPC(MsgEvent msg) {
-        this.rpc.call(msg);
+        rpc.call(msg);
     }
 
     /**
      * Starts the WatchDog timer
      */
     public void startWatchDog() {
-        this.watchDog.start();
+        if (watchDog != null)
+            watchDog.start();
+        else
+            logger.error("Attempted to start a non-existant WatchDog.");
+    }
+
+    /**
+     * Updates the WatchDog message parameters
+     */
+    public void updateWatchDog() {
+        if (watchDog != null)
+            watchDog.update(region, agent, pluginID, logger, config);
+        else
+            logger.error("Attempted to update a non-existent WatchDog.");
     }
 
     /**
      * Restarts the WatchDog timer
      */
     public void restartWatchDog() {
-        this.watchDog.restart();
+        if (this.watchDog != null)
+            this.watchDog.restart();
+        else
+            logger.error("Attempted to restart a non-existant WatchDog.");
     }
 
     /**
      * Stops the WatchDog timer
      */
     public void stopWatchDog() {
-        if(this.watchDog != null) { //possibly null on failure
+        if (this.watchDog != null)
             this.watchDog.stop();
-        }
+        else
+            logger.error("Attempted to stop a non-existant WatchDog.");
     }
 
     public String getName() {
@@ -239,7 +256,7 @@ public abstract class CPlugin {
     }
 
     public CExecutor getExec() {
-        return this.exec;
+        return exec;
     }
     protected void setExec(CExecutor exec) {
         this.exec = exec;
@@ -258,28 +275,28 @@ public abstract class CPlugin {
     }
 
     public ConcurrentLinkedQueue<MsgEvent> getMsgOutQueue() {
-        return this.msgOutQueue;
+        return msgOutQueue;
     }
     protected void setMsgOutQueue(ConcurrentLinkedQueue<MsgEvent> msgOutQueue) {
         this.msgOutQueue = msgOutQueue;
     }
 
     public ConcurrentMap<String, MsgEvent> getRPCMap() {
-        return this.rpcMap;
+        return rpcMap;
     }
     protected void setRPCMap(ConcurrentMap<String, MsgEvent> rpcMap) {
         this.rpcMap = rpcMap;
     }
 
     public RPC getRPC() {
-        return this.rpc;
+        return rpc;
     }
     protected void setRPC(RPC rpc) {
         this.rpc = rpc;
     }
 
     public WatchDog getWatchDog() {
-        return this.watchDog;
+        return watchDog;
     }
     protected void setWatchDog(WatchDog watchDog) {
         this.watchDog = watchDog;
@@ -318,13 +335,13 @@ public abstract class CPlugin {
         @Override
         public void run() {
             try {
-                MsgEvent retMsg = this.exec.execute(msg);
+                MsgEvent retMsg = exec.execute(msg);
                 if (retMsg != null) {
                     retMsg.setReturn();
-                    this.msgOutQueue.offer(retMsg);
+                    msgOutQueue.offer(retMsg);
                 }
             } catch (Exception e) {
-                this.logger.error("Message Execution Exception: {}", e.getMessage());
+                logger.error("Message Execution Exception: {}", e.getMessage());
             }
         }
     }
