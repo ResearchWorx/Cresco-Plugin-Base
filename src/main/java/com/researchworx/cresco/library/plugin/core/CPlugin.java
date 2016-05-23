@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentMap;
  * Cresco plugin base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
- * @version 0.4.6
  */
 public abstract class CPlugin {
     /** Region of the plugin instance */
