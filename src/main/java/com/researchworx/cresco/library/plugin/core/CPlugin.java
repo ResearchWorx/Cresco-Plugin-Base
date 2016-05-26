@@ -7,14 +7,13 @@ import com.researchworx.cresco.library.messaging.RPC;
 import com.researchworx.cresco.library.utilities.CLogger;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Cresco plugin base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
+ * @since 0.1.0
  */
 public abstract class CPlugin {
     /** Region of the plugin instance */
@@ -42,8 +41,6 @@ public abstract class CPlugin {
     protected ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
     /** Remote procedural call class of the plugin */
     protected RPC rpc;
-    /** Remote procedural call progress map of the plugin */
-    protected ConcurrentMap<String, MsgEvent> rpcMap;
     /** WatchDog timer of the plugin */
     protected WatchDog watchDog;
 
@@ -66,7 +63,6 @@ public abstract class CPlugin {
         setAgent("init");
         setPluginID("init");
         setExecutor();
-        setRPCMap(new ConcurrentHashMap<String, MsgEvent>());
         setMsgOutQueue(new ConcurrentLinkedQueue<MsgEvent>());
         setLogger(new CLogger(msgOutQueue, region, agent, pluginID));
     }
@@ -88,7 +84,7 @@ public abstract class CPlugin {
         setAgent(agent);
         setPluginID(pluginID);
         setLogger(new CLogger(this.msgOutQueue, this.region, this.agent, this.pluginID));
-        setRPC(new RPC(this.msgOutQueue, this.rpcMap, this.region, this.agent, this.pluginID, logger));
+        setRPC(new RPC(this.msgOutQueue, this.region, this.agent, this.pluginID, logger));
         setWatchDog(new WatchDog(this.region, this.agent, this.pluginID, logger, this.config));
         try {
             start();
@@ -148,15 +144,6 @@ public abstract class CPlugin {
     }
 
     /**
-     * Puts a message into the RPC map for tracking
-     * @param callID        CallID of the message
-     * @param message       RPC message to track
-     */
-    public void putRPCMap(String callID, MsgEvent message) {
-        rpcMap.put(callID, message);
-    }
-
-    /**
      * Sends messages to the Cresco agent
      * @param msg           MsgEvent object to send
      */
@@ -170,6 +157,15 @@ public abstract class CPlugin {
      */
     public void sendRPC(MsgEvent msg) {
         rpc.call(msg);
+    }
+
+    /**
+     * Receives a remote procedure call from the agent
+     * @param callId        Remote procedure call id
+     * @param msg           Return message
+     */
+    public void receiveRPC(String callId, MsgEvent msg) {
+        rpc.putReturnMessage(callId, msg);
     }
 
     /**
@@ -280,13 +276,6 @@ public abstract class CPlugin {
         this.msgOutQueue = msgOutQueue;
     }
 
-    public ConcurrentMap<String, MsgEvent> getRPCMap() {
-        return rpcMap;
-    }
-    protected void setRPCMap(ConcurrentMap<String, MsgEvent> rpcMap) {
-        this.rpcMap = rpcMap;
-    }
-
     public RPC getRPC() {
         return rpc;
     }
@@ -303,6 +292,9 @@ public abstract class CPlugin {
 
     /**
      * Processing agent for incoming messages
+     * @author V.K. Cody Bumgardner
+     * @author Caylin Hickey
+     * @since 0.1.0
      */
     protected static class MessageProcessor implements Runnable {
         /** Incoming MsgEvent object */

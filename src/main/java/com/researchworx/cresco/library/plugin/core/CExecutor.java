@@ -6,6 +6,7 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
  * Cresco executor base
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
+ * @since 0.1.0
  */
 public abstract class CExecutor {
     /** Plugin instance */
@@ -28,7 +29,7 @@ public abstract class CExecutor {
         String callID = incoming.getParam("callID-" + plugin.getRegion() + "-" +
                 plugin.getAgent() + "-" + plugin.getPluginID());
         if (callID != null) {
-            plugin.putRPCMap(callID, incoming);
+            plugin.receiveRPC(callID, incoming);
             return null;
         }
         if (incoming.getParam("dst_region").equals(plugin.getRegion()) &&
@@ -47,7 +48,8 @@ public abstract class CExecutor {
             } else if (incoming.getMsgType().equals(MsgEvent.Type.WATCHDOG)) {
                 incoming = processWatchDog(incoming);
             } else {
-                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" + plugin.getName() + ":" + plugin.getVersion() + "]");
+                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() +
+                        "] unsupported by plugin [" + plugin.getName() + ":" + plugin.getVersion() + "]");
             }
         } else {
             incoming.setMsgPlugin(incoming.getParam("dst_plugin"));
