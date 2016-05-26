@@ -62,8 +62,8 @@ public abstract class CPlugin {
         setRegion("init");
         setAgent("init");
         setPluginID("init");
-        setExecutor();
         setMsgOutQueue(new ConcurrentLinkedQueue<MsgEvent>());
+        setExecutor();
         setLogger(new CLogger(msgOutQueue, region, agent, pluginID));
     }
 

@@ -6,7 +6,7 @@
 
 	<groupId>com.researchworx.cresco</groupId>
 	<artifactId>cresco-plugin-library</artifactId>
-	<version>0.4.7</version>
+	<version>0.4.8</version>
 	<packaging>jar</packaging>
 
 	<name>Cresco Plugin Library</name>
