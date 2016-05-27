@@ -6,7 +6,7 @@
 
 	<groupId>com.researchworx.cresco</groupId>
 	<artifactId>cresco-plugin-library</artifactId>
-	<version>0.4.9</version>
+	<version>0.4.10</version>
 	<packaging>jar</packaging>
 
 	<name>Cresco Plugin Library</name>
@@ -45,7 +45,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk>1.7</jdk>
-		<cresco.library.version>0.3.6</cresco.library.version>
+		<cresco.library.version>0.3.7</cresco.library.version>
 		<maven.compiler.version>3.5.1</maven.compiler.version>
 		<maven.gpg.version>1.6</maven.gpg.version>
 		<maven.javadoc.version>2.10.3</maven.javadoc.version>
