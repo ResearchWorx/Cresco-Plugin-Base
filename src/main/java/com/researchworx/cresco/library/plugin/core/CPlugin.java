@@ -62,9 +62,6 @@ public abstract class CPlugin {
         setRegion("init");
         setAgent("init");
         setPluginID("init");
-        setMsgOutQueue(new ConcurrentLinkedQueue<MsgEvent>());
-        setExecutor();
-        setLogger(new CLogger(msgOutQueue, region, agent, pluginID));
     }
 
     /**
@@ -79,6 +76,7 @@ public abstract class CPlugin {
     public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgOutQueue, SubnodeConfiguration config, String region, String agent, String pluginID) {
         setActive(true);
         setMsgOutQueue(msgOutQueue);
+        setExecutor();
         setConfig(new Config(config));
         setRegion(region);
         setAgent(agent);
@@ -89,7 +87,8 @@ public abstract class CPlugin {
         try {
             start();
         } catch (Exception e) {
-            logger.error("Plugin Initialization Exception: {}", e.getMessage());
+            if (logger != null)
+                logger.error("Initialization failed. [Exception: {}]", e.getMessage());
             return false;
         }
         startWatchDog();
@@ -100,12 +99,12 @@ public abstract class CPlugin {
      * Shutdown method called when the plugin is unloaded from the Cresco agent
      */
     public void shutdown() {
-        setActive(false);
         stopWatchDog();
+        setActive(false);
         try {
             cleanUp();
         } catch (Exception e) {
-            logger.error("Plugin Shutdown Exception: {}", e.getMessage());
+            logger.error("Shutdown error encountered. [Exception: {}]", e.getMessage());
         }
     }
 
@@ -155,8 +154,8 @@ public abstract class CPlugin {
      * Issues a remote procedure call to the agent
      * @param msg           MsgEvent object to issue
      */
-    public void sendRPC(MsgEvent msg) {
-        rpc.call(msg);
+    public MsgEvent sendRPC(MsgEvent msg) {
+        return rpc.call(msg);
     }
 
     /**
@@ -174,8 +173,6 @@ public abstract class CPlugin {
     public void startWatchDog() {
         if (watchDog != null)
             watchDog.start();
-        else
-            logger.error("Attempted to start a non-existant WatchDog.");
     }
 
     /**
@@ -184,8 +181,6 @@ public abstract class CPlugin {
     public void updateWatchDog() {
         if (watchDog != null)
             watchDog.update(region, agent, pluginID, logger, config);
-        else
-            logger.error("Attempted to update a non-existent WatchDog.");
     }
 
     /**
@@ -194,8 +189,6 @@ public abstract class CPlugin {
     public void restartWatchDog() {
         if (this.watchDog != null)
             this.watchDog.restart();
-        else
-            logger.error("Attempted to restart a non-existant WatchDog.");
     }
 
     /**
@@ -204,8 +197,6 @@ public abstract class CPlugin {
     public void stopWatchDog() {
         if (this.watchDog != null)
             this.watchDog.stop();
-        else
-            logger.error("Attempted to stop a non-existant WatchDog.");
     }
 
     public String getName() {

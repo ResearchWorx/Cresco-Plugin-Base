@@ -26,10 +26,10 @@ public abstract class CExecutor {
      * @return              Processed message
      */
     public MsgEvent execute(MsgEvent incoming) {
-        String callID = incoming.getParam("callID-" + plugin.getRegion() + "-" +
+        String callId = incoming.getParam("callId-" + plugin.getRegion() + "-" +
                 plugin.getAgent() + "-" + plugin.getPluginID());
-        if (callID != null) {
-            plugin.receiveRPC(callID, incoming);
+        if (callId != null) {
+            plugin.receiveRPC(callId, incoming);
             return null;
         }
         if (incoming.getParam("dst_region").equals(plugin.getRegion()) &&
@@ -48,8 +48,8 @@ public abstract class CExecutor {
             } else if (incoming.getMsgType().equals(MsgEvent.Type.WATCHDOG)) {
                 incoming = processWatchDog(incoming);
             } else {
-                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() +
-                        "] unsupported by plugin [" + plugin.getName() + ":" + plugin.getVersion() + "]");
+                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" +
+                        plugin.getName() + ":" + plugin.getVersion() + "]");
             }
         } else {
             incoming.setMsgPlugin(incoming.getParam("dst_plugin"));
