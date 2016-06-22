@@ -74,7 +74,6 @@ public abstract class CPlugin {
      * @return              Whether the initialization was successful
      */
     public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgOutQueue, SubnodeConfiguration config, String region, String agent, String pluginID) {
-        setActive(true);
         setMsgOutQueue(msgOutQueue);
         setExecutor();
         setConfig(new Config(config));
@@ -92,8 +91,24 @@ public abstract class CPlugin {
             return false;
         }
         startWatchDog();
+        setActive(true);
         return true;
     }
+
+    /**
+     * Method called before agent plugin initialization
+     */
+    protected void preStart() { }
+
+    /**
+     * Main entry point for plugin implementation class
+     */
+    protected abstract void start();
+
+    /**
+     * Method called after plugin has been successfully initialized
+     */
+    protected void postStart() { }
 
     /**
      * Shutdown method called when the plugin is unloaded from the Cresco agent
@@ -119,11 +134,6 @@ public abstract class CPlugin {
     protected void setExecutor() {
         this.exec = new SimpleExecutor(this);
     }
-
-    /**
-     * Main entry point for plugin implementation class
-     */
-    protected abstract void start();
 
     /**
      * Submits a MsgEvent to the CExecutor
