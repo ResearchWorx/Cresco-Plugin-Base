@@ -98,7 +98,7 @@ public abstract class CPlugin {
     /**
      * Method called before agent plugin initialization
      */
-    protected void preStart() { }
+    public void preStart() { }
 
     /**
      * Main entry point for plugin implementation class
@@ -108,7 +108,7 @@ public abstract class CPlugin {
     /**
      * Method called after plugin has been successfully initialized
      */
-    protected void postStart() { }
+    public void postStart() { }
 
     /**
      * Shutdown method called when the plugin is unloaded from the Cresco agent
