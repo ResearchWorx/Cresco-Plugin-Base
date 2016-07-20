@@ -149,7 +149,7 @@ public abstract class CPlugin {
      */
     public void msgIn(MsgEvent message) {
         if (message == null) return;
-        new Thread(new MessageProcessor(message, msgOutQueue, exec, logger)).start();
+        new Thread(new MessageProcessor(message)).start();
     }
 
     /**
@@ -165,6 +165,7 @@ public abstract class CPlugin {
      * @param msg           MsgEvent object to issue
      */
     public MsgEvent sendRPC(MsgEvent msg) {
+        msg.setParam("is_rpc", "true");
         return rpc.call(msg);
     }
 
@@ -297,28 +298,19 @@ public abstract class CPlugin {
      * @author Caylin Hickey
      * @since 0.1.0
      */
-    protected static class MessageProcessor implements Runnable {
+    protected class MessageProcessor implements Runnable {
         /** Incoming MsgEvent object */
         private MsgEvent msg;
-        /** Outbound message channel */
-        private ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
-        /** Cresco executor used to process message */
-        private CExecutor exec;
-        /** Cresco logger instance */
-        private CLogger logger;
+        /** MessageProcessor Cresco Logger instance */
+        private final CLogger logger;
 
         /**
          * Constructor
-         * @param msg               MsgEvent to process
-         * @param msgOutQueue       Communication channel with Cresco agent
-         * @param exec              Execution engine
-         * @param logger            Logger instance
+         * @param msg   MsgEvent to process
          */
-        MessageProcessor(MsgEvent msg, ConcurrentLinkedQueue<MsgEvent> msgOutQueue, CExecutor exec, CLogger logger) {
+        MessageProcessor(MsgEvent msg) {
             this.msg = msg;
-            this.msgOutQueue = msgOutQueue;
-            this.exec = exec;
-            this.logger = logger;
+            logger = new CLogger(MessageProcessor.class, msgOutQueue, region, agent, pluginID);
         }
 
         /**
@@ -328,7 +320,7 @@ public abstract class CPlugin {
         public void run() {
             try {
                 MsgEvent retMsg = exec.execute(msg);
-                if (retMsg != null) {
+                if (retMsg != null && retMsg.getParams().keySet().contains("is_rpc")) {
                     retMsg.setReturn();
                     msgOutQueue.offer(retMsg);
                 }
