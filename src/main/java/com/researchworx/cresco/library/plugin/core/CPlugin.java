@@ -113,13 +113,15 @@ public abstract class CPlugin {
     /**
      * Shutdown method called when the plugin is unloaded from the Cresco agent
      */
-    public void shutdown() {
+    public boolean shutdown() {
         stopWatchDog();
         setActive(false);
         try {
             cleanUp();
+            return true;
         } catch (Exception e) {
             logger.error("Shutdown error encountered. [Exception: {}]", e.getMessage());
+            return false;
         }
     }
 
