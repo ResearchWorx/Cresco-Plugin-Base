@@ -111,7 +111,13 @@ public abstract class CPlugin {
     public void postStart() { }
 
     /**
+     * Method called before agent plugin shutdown
+     */
+    public void preShutdown() { }
+
+    /**
      * Shutdown method called when the plugin is unloaded from the Cresco agent
+     * @return              Whether cleanUp was completed successfully
      */
     public boolean shutdown() {
         stopWatchDog();
@@ -140,6 +146,7 @@ public abstract class CPlugin {
     /**
      * Submits a MsgEvent to the CExecutor
      * @param message       Message for the executor
+     * @return              The MsgEvent returned by the Executor
      */
     public MsgEvent execute(MsgEvent message) {
         return exec.execute(message);
@@ -165,6 +172,7 @@ public abstract class CPlugin {
     /**
      * Issues a remote procedure call to the agent
      * @param msg           MsgEvent object to issue
+     * @return              The remote procedure call return MsgEvent
      */
     public MsgEvent sendRPC(MsgEvent msg) {
         msg.setParam("is_rpc", "true");
