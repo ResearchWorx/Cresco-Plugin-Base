@@ -7,7 +7,7 @@ import com.researchworx.cresco.library.messaging.RPC;
 import com.researchworx.cresco.library.utilities.CLogger;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Cresco plugin base
@@ -38,7 +38,7 @@ public abstract class CPlugin {
     /** Logger of the plugin */
     protected CLogger logger;
     /** Message queue from plugin to agent */
-    protected ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
+    protected BlockingQueue<MsgEvent> msgOutQueue;
     /** Remote procedural call class of the plugin */
     protected RPC rpc;
     /** WatchDog timer of the plugin */
@@ -73,7 +73,7 @@ public abstract class CPlugin {
      * @param pluginID      Internal agent ID for the plugin
      * @return              Whether the initialization was successful
      */
-    public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgOutQueue, SubnodeConfiguration config, String region, String agent, String pluginID) {
+    public boolean initialize(BlockingQueue<MsgEvent> msgOutQueue, SubnodeConfiguration config, String region, String agent, String pluginID) {
         setMsgOutQueue(msgOutQueue);
         setExecutor();
         setConfig(new Config(config));
@@ -166,7 +166,7 @@ public abstract class CPlugin {
      * @param msg           MsgEvent object to send
      */
     public void sendMsgEvent(MsgEvent msg) {
-        msgOutQueue.offer(msg);
+        msgOutQueue.add(msg);
     }
 
     /**
@@ -281,10 +281,10 @@ public abstract class CPlugin {
         this.logger = logger;
     }
 
-    public ConcurrentLinkedQueue<MsgEvent> getMsgOutQueue() {
+    public BlockingQueue<MsgEvent> getMsgOutQueue() {
         return msgOutQueue;
     }
-    protected void setMsgOutQueue(ConcurrentLinkedQueue<MsgEvent> msgOutQueue) {
+    protected void setMsgOutQueue(BlockingQueue<MsgEvent> msgOutQueue) {
         this.msgOutQueue = msgOutQueue;
     }
 
@@ -332,7 +332,7 @@ public abstract class CPlugin {
                 MsgEvent retMsg = exec.execute(msg);
                 if (retMsg != null && retMsg.getParams().keySet().contains("is_rpc")) {
                     retMsg.setReturn();
-                    msgOutQueue.offer(retMsg);
+                    msgOutQueue.add(retMsg);
                 }
             } catch (Exception e) {
                 logger.error("Message Execution Exception: {}", e.getMessage());
