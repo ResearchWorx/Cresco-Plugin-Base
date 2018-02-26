@@ -35,21 +35,21 @@ public abstract class CExecutor {
         if (incoming.getParam("dst_region").equals(plugin.getRegion()) &&
                 incoming.getParam("dst_agent").equals(plugin.getAgent()) &&
                 incoming.getParam("dst_plugin").equals(plugin.getPluginID())) {
-            if (incoming.getMsgType().equals(MsgEvent.Type.CONFIG)) {
+            if (incoming.getType().equals(MsgEvent.Type.CONFIG)) {
                 incoming = processConfig(incoming);
-            } else if (incoming.getMsgType().equals(MsgEvent.Type.DISCOVER)) {
+            } else if (incoming.getType().equals(MsgEvent.Type.DISCOVER)) {
                 incoming = processDiscover(incoming);
-            } else if (incoming.getMsgType().equals(MsgEvent.Type.ERROR)) {
+            } else if (incoming.getType().equals(MsgEvent.Type.ERROR)) {
                 incoming = processConfig(incoming);
-            } else if (incoming.getMsgType().equals(MsgEvent.Type.EXEC)) {
+            } else if (incoming.getType().equals(MsgEvent.Type.EXEC)) {
                 incoming = processExec(incoming);
-            } else if (incoming.getMsgType().equals(MsgEvent.Type.INFO)) {
+            } else if (incoming.getType().equals(MsgEvent.Type.INFO)) {
                 incoming = processInfo(incoming);
-            } else if (incoming.getMsgType().equals(MsgEvent.Type.WATCHDOG)) {
+            } else if (incoming.getType().equals(MsgEvent.Type.WATCHDOG)) {
                 incoming = processWatchDog(incoming);
             } else {
-                incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" +
-                        plugin.getName() + ":" + plugin.getVersion() + "]");
+                incoming.setParam("exec_error", "Message type [" + incoming.getType().name() +
+                        "] unsupported by plugin [" + plugin.getName() + ":" + plugin.getVersion() + "]");
             }
         }
         return incoming;
