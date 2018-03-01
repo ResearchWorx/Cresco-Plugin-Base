@@ -1,10 +1,9 @@
 package com.researchworx.cresco.library.plugin.core;
 
-import com.researchworx.cresco.library.core.Config;
-import com.researchworx.cresco.library.core.WatchDog;
 import com.researchworx.cresco.library.messaging.MsgEvent;
-import com.researchworx.cresco.library.messaging.RPC;
-import com.researchworx.cresco.library.utilities.CLogger;
+import com.researchworx.cresco.library.plugin.messaging.RPC;
+import com.researchworx.cresco.library.plugin.utilities.CLogger;
+import com.researchworx.cresco.library.plugin.utilities.Config;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
 import java.util.concurrent.BlockingQueue;
@@ -80,7 +79,7 @@ public abstract class CPlugin {
         setRegion(region);
         setAgent(agent);
         setPluginID(pluginID);
-        setLogger(new CLogger(this.msgOutQueue, this.region, this.agent, this.pluginID));
+        setLogger(new CLogger(this.msgOutQueue));
         setRPC(new RPC(this.msgOutQueue, this.region, this.agent, this.pluginID, logger));
         setWatchDog(new WatchDog(this.region, this.agent, this.pluginID, logger, this.config));
         try {
@@ -320,7 +319,7 @@ public abstract class CPlugin {
          */
         MessageProcessor(MsgEvent msg) {
             this.msg = msg;
-            logger = new CLogger(MessageProcessor.class, msgOutQueue, region, agent, pluginID);
+            logger = new CLogger(MessageProcessor.class, msgOutQueue);
         }
 
         /**
