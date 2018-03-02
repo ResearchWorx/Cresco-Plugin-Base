@@ -13,6 +13,10 @@ import java.util.concurrent.BlockingQueue;
  * @author V.K. Cody Bumgardner
  * @author Caylin Hickey
  * @since 0.1.0
+ * @see CExecutor
+ * @see CLogger
+ * @see Config
+ * @see com.researchworx.cresco.library.core.CState
  */
 public abstract class CPlugin {
     /** Region of the plugin instance */
