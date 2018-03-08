@@ -1,5 +1,7 @@
 package com.researchworx.cresco.library.plugin.core;
 
+import com.researchworx.cresco.library.core.CState;
+import com.researchworx.cresco.library.messaging.CAddr;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import com.researchworx.cresco.library.plugin.messaging.RPC;
 import com.researchworx.cresco.library.plugin.utilities.CLogger;
@@ -153,6 +155,16 @@ public abstract class CPlugin {
      */
     public MsgEvent execute(MsgEvent message) {
         return exec.execute(message);
+    }
+
+    /**
+     * Generate a MsgEvent
+     * @param type          Type of message
+     * @param destination   Destination of message
+     * @return              A pre-configured MsgEvent instance
+     */
+    public MsgEvent createMsgEvent(MsgEvent.Type type, CAddr destination) {
+        return new MsgEvent(type, new CAddr(CState.getLocalRegion(), CState.getLocalAgent(), getPluginID()), destination);
     }
 
     /**
