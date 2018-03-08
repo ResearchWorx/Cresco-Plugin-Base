@@ -33,7 +33,7 @@ public abstract class CPlugin {
 
     /** Status of the plugin */
     protected boolean isActive;
-    /** Configuration (INI) of the plugin */
+    /** Configuration of the plugin */
     protected Config config;
 
     /** Executor of the plugin */
