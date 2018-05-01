@@ -47,6 +47,8 @@ public abstract class CExecutor {
                 incoming = processInfo(incoming);
             } else if (incoming.getMsgType().equals(MsgEvent.Type.WATCHDOG)) {
                 incoming = processWatchDog(incoming);
+            } else if (incoming.getMsgType().equals(MsgEvent.Type.KPI)) {
+                incoming = processKPI(incoming);
             } else {
                 incoming.setMsgBody("Message type [" + incoming.getMsgType().name() + "] unsupported by plugin [" +
                         plugin.getName() + ":" + plugin.getVersion() + "]");
@@ -106,6 +108,15 @@ public abstract class CExecutor {
      * @return              Processed message
      */
     public MsgEvent processWatchDog(MsgEvent incoming) {
+        return incoming;
+    }
+
+    /**
+     * Override to process KPI messages
+     * @param incoming      Message to process
+     * @return              Processed message
+     */
+    public MsgEvent processKPI(MsgEvent incoming) {
         return incoming;
     }
 }
