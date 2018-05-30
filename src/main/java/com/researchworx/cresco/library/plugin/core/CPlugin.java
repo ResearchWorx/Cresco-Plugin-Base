@@ -7,6 +7,8 @@ import com.researchworx.cresco.library.messaging.RPC;
 import com.researchworx.cresco.library.utilities.CLogger;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -220,6 +222,20 @@ public abstract class CPlugin {
             this.watchDog.stop();
     }
 
+    /**
+     * Stops this running plugin after one (1) second delay
+     */
+    public void quit() {
+        new Thread(new DelayedQuit(1000L)).start();
+    }
+
+    /**
+     * Stops this running plugin immediately
+     */
+    public void quitNow() {
+        new Thread(new DelayedQuit(0L)).start();
+    }
+
     public String getName() {
         return name;
     }
@@ -337,6 +353,41 @@ public abstract class CPlugin {
             } catch (Exception e) {
                 logger.error("Message Execution Exception: {}", e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Method to request termination of running plugin
+     * @author Caylin Hickey
+     * @author V.K. Cody Bumgardner
+     * @since 0.5.3
+     */
+    protected class DelayedQuit implements Runnable {
+        private long wait_time = 1000L;
+
+        public DelayedQuit() { }
+
+        public DelayedQuit(long wait_time) {
+            this.wait_time = wait_time;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+            Map<String, String> params = new HashMap<>();
+            params.put("src_region", getRegion());
+            params.put("src_agent", getAgent());
+            params.put("src_plugin", getPluginID());
+            params.put("dst_region", getRegion());
+            params.put("dst_agent", getAgent());
+            params.put("action", "pluginremove");
+            params.put("plugin", getPluginID());
+            sendMsgEvent(new MsgEvent(MsgEvent.Type.CONFIG, getRegion(),
+                    getAgent(), getPluginID(), params));
         }
     }
 }
